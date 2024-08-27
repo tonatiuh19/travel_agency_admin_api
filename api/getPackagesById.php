@@ -12,6 +12,7 @@ if($method == 'POST'){
 
 	if ($params['empID']) {
 		$empID = $params['empID'];
+        $packID = $params['packID'];
 
 		$sql = "SELECT a.packID, 
             a.packTitle, 
@@ -29,7 +30,7 @@ if($method == 'POST'){
             FROM PACKAGES as a
             INNER JOIN HOTELS as b on a.packHotelID=b.hotID
             INNER JOIN CITIES as c on c.citID=a.packLocationID
-            WHERE (a.status=1 OR a.status=2) AND a.empID=".$empID."";
+            WHERE (a.status=1 OR a.status=2) AND a.empID=".$empID." AND a.packID=".$packID."";
 		
 		$result = $conn->query($sql);
 		if ($result->num_rows > 0) {

@@ -10,7 +10,9 @@ if ($method == 'POST') {
     $params = json_decode($requestBody);
     $params = (array) $params;
 
-    if ($params['id_user']) {
+    if ($params['packID']) {
+        $packID = $params['packID'];
+
         $id_user = $params['id_user'];
         $name = $params['name'];
         $price = $params['price'];
@@ -35,18 +37,22 @@ if ($method == 'POST') {
         $hotelDescription = $params['hotelDescription'];
         $generalDescription = $params['generalDescription'];
 
-
         $todayVisit = date("Y-m-d H:i:s");
 
-        $sql = "INSERT INTO PACKAGES (empID, packTitle, packDescription, packLocationID, packHotelID, packHotelDescription, packLimit, packPrice, packStartDate, packEndDate, packTransportId, packTransportDescription, inputDate, packDateRange) VALUES ('$id_user', '$name', '$generalDescription', '$location', '$hostingType', '$hotelDescription', '$limit', '$price', '$startDate', '$endDate', '$transportType', '$transportDescription', '$todayVisit', '$dateRange')";
+        $sql = "UPDATE PACKAGES SET status=4 WHERE packID=$packID";
 
         if ($conn->query($sql) === TRUE) {
-            $last_id = $conn->insert_id;
-            echo "1";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
+            $sql2 = "INSERT INTO PACKAGES (empID, packTitle, packDescription, packLocationID, packHotelID, packHotelDescription, packLimit, packPrice, packStartDate, packEndDate, packTransportId, packTransportDescription, inputDate, packDateRange) VALUES ('$id_user', '$name', '$generalDescription', '$location', '$hostingType', '$hotelDescription', '$limit', '$price', '$startDate', '$endDate', '$transportType', '$transportDescription', '$todayVisit', '$dateRange')";
 
+            if ($conn->query($sql2) === TRUE) {
+                $last_id = $conn->insert_id;
+                echo "1";
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
 
     } else {
         echo "Not valid Body Data";

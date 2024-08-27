@@ -10,7 +10,7 @@ if ($method == 'POST') {
     $params = json_decode($requestBody);
     $params = (array) $params;
 
-    $sql = "SELECT a.ctryID, a.ctryName, a.status FROM COUNTRIES as a";
+    $sql = "SELECT a.hotID, a.hotLabel, a.status FROM HOTELS as a WHERE a.hotID <> 0";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {

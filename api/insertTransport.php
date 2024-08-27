@@ -1,8 +1,8 @@
 <?php
-require_once('db_cnn/cnn.php');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
+require_once('db_cnn/cnn.php');
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method == 'POST') {
@@ -10,17 +10,23 @@ if ($method == 'POST') {
     $params = json_decode($requestBody);
     $params = (array) $params;
 
-    $sql = "SELECT a.ctryID, a.ctryName, a.status FROM COUNTRIES as a";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $array[] = array_map('utf8_encode', $row);
+    if ($params['transportLabel']) {
+        $transportLabel = $params['transportLabel'];
+
+        $todayVisit = date("Y-m-d H:i:s");
+
+        $sql = "INSERT INTO TRANSPORTS (transportLabel) VALUES ('$transportLabel')";
+
+        if ($conn->query($sql) === TRUE) {
+            $last_id = $conn->insert_id;
+            echo "1";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
         }
-        $res = json_encode($array, JSON_NUMERIC_CHECK);
-        header('Content-type: application/json; charset=utf-8');
-        echo $res;
+
+
     } else {
-        echo "No results";
+        echo "Not valid Body Data";
     }
 
 } else {
