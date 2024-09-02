@@ -10,7 +10,7 @@ if ($method == 'POST') {
     $params = json_decode($requestBody);
     $params = (array) $params;
 
-    $sql = "SELECT a.ctryID, a.ctryName, a.status FROM COUNTRIES as a";
+    $sql = "SELECT a.ctryID, a.ctryName, a.status as 'ctryStatus', a.id_cont as 'contID' FROM COUNTRIES as a";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -22,10 +22,8 @@ if ($method == 'POST') {
     } else {
         echo "No results";
     }
-
 } else {
     echo "Not valid Data";
 }
 
 $conn->close();
-?>
