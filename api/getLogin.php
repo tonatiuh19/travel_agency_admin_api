@@ -3,6 +3,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
 require_once('db_cnn/cnn.php');
+require_once('vendor/autoload.php');
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method == 'POST') {
@@ -11,13 +12,25 @@ if ($method == 'POST') {
     $params = (array) $params;
 
     if ($params['custEmail']) {
+
+        $stripe = new \Stripe\StripeClient(
+            "sk_test_51OtL2vI0AVtzugqlOig4E1ACAVjBX28q4H3PtW5AWEeICiAi6USnIgtDTB4SkQ2cg2FhWReBjT4sVqqNJ321lxHq00ApVEJXcL"
+        );
+
         $custEmail = $params['custEmail'];
         $custName = $params['custName'];
         $custSurname = $params['custSurname'];
         $picture = $params['picture'];
         $custEmailVerified = $params['custEmailVerified'];
 
-        $checkUserQuery = "SELECT a.custID, a.custEmail, a.custEmailVerified, a.custName, a.custSurname, a.picture FROM CUSTOMERS as a WHERE a.custEmail='$custEmail'";
+
+        $customer = $stripe->customers->create([
+            'name' => $custName . " " . $custSurname,
+            'email' => $custEmail,
+        ]);
+        $custStripeID = $customer["id"];
+
+        $checkUserQuery = "SELECT a.custID, a.custEmail, a.custEmailVerified, a.custName, a.custSurname, a.picture, a.custStripeID FROM CUSTOMERS as a WHERE a.custEmail='$custEmail'";
 
         $result = $conn->query($checkUserQuery);
 
@@ -27,13 +40,13 @@ if ($method == 'POST') {
             echo json_encode($user);
         } else {
             // User does not exist, insert the user
-            $insertUserQuery = "INSERT INTO CUSTOMERS(custEmail, custEmailVerified, custName, custSurname, picture) 
-            VALUES ('$custEmail', '$custEmailVerified', '$custName', '$custSurname', '$picture')";
+            $insertUserQuery = "INSERT INTO CUSTOMERS(custEmail, custEmailVerified, custName, custSurname, picture, custStripeID) 
+            VALUES ('$custEmail', '$custEmailVerified', '$custName', '$custSurname', '$picture', '$custStripeID')";
 
             if ($conn->query($insertUserQuery) === TRUE) {
                 // Fetch the newly inserted user
                 $newUserId = $conn->insert_id;
-                $newUserQuery = "SELECT a.custID, a.custEmail, a.custEmailVerified, a.custName, a.custSurname, a.picture 
+                $newUserQuery = "SELECT a.custID, a.custEmail, a.custEmailVerified, a.custName, a.custSurname, a.picture, a.custStripeID 
                 FROM CUSTOMERS as a 
                 WHERE custID = $newUserId";
 
