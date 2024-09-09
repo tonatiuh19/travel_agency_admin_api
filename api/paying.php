@@ -39,8 +39,8 @@ if ($method == 'POST') {
             $chargeId = $charge["id"];
 
             // Insert into BOOKING table
-            $insertBookingQuery = "INSERT INTO BOOKINGS(bookCustomerID, bookPackageID, bookDate) 
-                               VALUES ('$bookCustomerID', '$bookPackageID', '$todayVisit')";
+            $insertBookingQuery = "INSERT INTO BOOKINGS(bookCustomerID, bookPackageID, bookDate, bookStripeChargeID, bookPaid) 
+                               VALUES ('$bookCustomerID', '$bookPackageID', '$todayVisit', '$chargeId', 1)";
 
             if ($conn->query($insertBookingQuery) === TRUE) {
                 $bookingID = $conn->insert_id;
@@ -84,7 +84,14 @@ if ($method == 'POST') {
                 echo json_encode(["message" => "Error inserting booking: " . $conn->error, "paymentSuccess" => false, "errorCode" => 500]);
             }
         } catch (Exception $e) {
-            echo json_encode(["message" => "Error payment: " . $e->getMessage(), "paymentSuccess" => false, "errorCode" => 500]);
+            $insertBadBookingQuery = "INSERT INTO BOOKINGS(bookCustomerID, bookPackageID, bookDate, bookPaid) 
+                               VALUES ('$bookCustomerID', '$bookPackageID', '$todayVisit', 0)";
+            if ($conn->query($insertBadBookingQuery) === TRUE) {
+
+                echo json_encode(["message" => "Error payment: " . $e->getMessage(), "paymentSuccess" => false, "errorCode" => 500]);
+            } else {
+                echo json_encode(["message" => "Error inserting booking: " . $conn->error, "paymentSuccess" => false, "errorCode" => 500]);
+            }
         }
     } else {
         echo json_encode(["message" => "Invalid input", "paymentSuccess" => false, "errorCode" => 400]);
