@@ -76,6 +76,7 @@ if ($method == 'POST') {
                 }
 
                 echo json_encode([
+                    "bookingID" => $bookingID,
                     "message" => "Booking and passengers inserted successfully",
                     "paymentSuccess" => true,
 
