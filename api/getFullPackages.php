@@ -18,6 +18,7 @@ if ($method == 'POST') {
             a.packHotelDescription, 
             a.packLimit, 
             a.packPrice, 
+            a.packPriceMax,
             a.packTransportId, 
             a.packTransportDescription, 
             a.packDateRange,
@@ -39,11 +40,8 @@ if ($method == 'POST') {
     } else {
         echo "No results";
     }
-
-
 } else {
     echo "Not valid Data";
 }
 
 $conn->close();
-?>

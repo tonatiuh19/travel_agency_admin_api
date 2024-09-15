@@ -20,6 +20,8 @@ if ($method == 'POST') {
     b.bookCustomerID,
     b.bookPackageID,
     b.bookDate,
+    b.bookDateFor,
+    b.bookPaidPrice,
     bc.contactName,
     bc.contactSurName,
     bc.contactEmail,

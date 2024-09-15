@@ -21,6 +21,7 @@ if ($method == 'POST') {
         $bookPackageID = $params['packID'];
         $bookPrice = $params['packPrice'];
         $custStripeID = $params['custStripeID'];
+        $bookDateFor = $params['bookDateFor'];
         $token = $params['token'];
 
         $todayVisit = date("Y-m-d H:i:s");
@@ -33,14 +34,14 @@ if ($method == 'POST') {
 
             $charge = $stripe->charges->create([
                 'amount' => $bookPrice * 100,
-                'currency' => 'mxn',
+                'currency' => 'eur',
                 'source' => $token
             ]);
             $chargeId = $charge["id"];
 
             // Insert into BOOKING table
-            $insertBookingQuery = "INSERT INTO BOOKINGS(bookCustomerID, bookPackageID, bookDate, bookStripeChargeID, bookPaid) 
-                               VALUES ('$bookCustomerID', '$bookPackageID', '$todayVisit', '$chargeId', 1)";
+            $insertBookingQuery = "INSERT INTO BOOKINGS(bookCustomerID, bookPackageID, bookDate, bookStripeChargeID, bookPaid, bookDateFor, bookPaidPrice) 
+                               VALUES ('$bookCustomerID', '$bookPackageID', '$todayVisit', '$chargeId', 1, '$bookDateFor', '$bookPrice')";
 
             if ($conn->query($insertBookingQuery) === TRUE) {
                 $bookingID = $conn->insert_id;
@@ -102,4 +103,3 @@ if ($method == 'POST') {
 }
 
 $conn->close();
-?>

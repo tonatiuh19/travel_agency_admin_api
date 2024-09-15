@@ -22,6 +22,7 @@ if ($method == 'POST') {
     a.packHotelDescription, 
     a.packLimit, 
     a.packPrice, 
+    a.packPriceMax,
     a.packTransportId, 
     a.packTransportDescription, 
     a.packDateRange, 
@@ -53,10 +54,8 @@ WHERE
     } else {
         echo "Not valid Body Data";
     }
-
 } else {
     echo "Not valid Data";
 }
 
 $conn->close();
-?>
