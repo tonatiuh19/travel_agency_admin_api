@@ -32,7 +32,8 @@ if ($method == 'POST') {
     A.packTitle,
     A.packPrice,
     A.packTransportId,
-    A.packHotelID
+    A.packHotelID,
+    A.packID
 FROM 
     BOOKINGS b
 INNER JOIN PACKAGES as A on A.packID = b.bookPackageID

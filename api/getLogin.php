@@ -30,7 +30,25 @@ if ($method == 'POST') {
         ]);
         $custStripeID = $customer["id"];
 
-        $checkUserQuery = "SELECT a.custID, a.custEmail, a.custEmailVerified, a.custName, a.custSurname, a.picture, a.custStripeID FROM CUSTOMERS as a WHERE a.custEmail='$custEmail'";
+        $checkUserQuery = " SELECT 
+        a.custID, 
+        a.custEmail, 
+        a.custEmailVerified, 
+        a.custName, 
+        a.custSurname, 
+        a.picture, 
+        a.custStripeID,
+        CASE 
+            WHEN b.bookCustomerID IS NOT NULL THEN 1 
+            ELSE 0 
+        END AS hasBookings
+    FROM 
+        CUSTOMERS as a
+    LEFT JOIN 
+        BOOKINGS as b 
+    ON 
+        a.custID = b.bookCustomerID
+    WHERE a.custEmail='$custEmail' LIMIT 1";
 
         $result = $conn->query($checkUserQuery);
 
