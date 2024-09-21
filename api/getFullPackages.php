@@ -22,6 +22,7 @@ if ($method == 'POST') {
             a.packTransportId, 
             a.packTransportDescription, 
             a.packDateRange,
+            a.packImage,
             b.hotLabel,
             c.citName
             FROM PACKAGES as a

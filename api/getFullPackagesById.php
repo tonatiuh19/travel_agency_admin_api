@@ -26,6 +26,7 @@ if ($method == 'POST') {
     a.packTransportId, 
     a.packTransportDescription, 
     a.packDateRange, 
+    a.packImage,
     b.hotLabel, 
     c.citName,
     (SELECT COUNT(*) FROM REVIEWS WHERE packID = a.packID) AS totalReviews,
@@ -42,10 +43,31 @@ WHERE
 
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $array[] = array_map('utf8_encode', $row);
+            $packageDetails = $result->fetch_assoc();
+            $packageDetails = array_map('utf8_encode', $packageDetails);
+
+            // Query to get package images
+            $sqlImages = "SELECT 
+                a.packageImageID, 
+                a.source 
+            FROM 
+                PACKAGES_IMAGES as a 
+            WHERE 
+                a.active=1 
+                AND a.packagePackID=" . $packID;
+
+            $resultImages = $conn->query($sqlImages);
+            $images = [];
+            if ($resultImages->num_rows > 0) {
+                while ($row = $resultImages->fetch_assoc()) {
+                    $images[] = array_map('utf8_encode', $row);
+                }
             }
-            $res = json_encode($array, JSON_NUMERIC_CHECK);
+
+            // Add images array to package details
+            $packageDetails['images'] = $images;
+
+            $res = json_encode($packageDetails, JSON_NUMERIC_CHECK);
             header('Content-type: application/json; charset=utf-8');
             echo $res;
         } else {
